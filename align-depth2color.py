@@ -51,7 +51,7 @@ print("Depth Scale is: ", depth_scale)
 
 # We will be removing the background of objects more than
 #  clipping_distance_in_meters meters away
-clipping_distance_in_meters = 0.4 #1 meter
+clipping_distance_in_meters = 1 #1meter
 clipping_distance = clipping_distance_in_meters / depth_scale
 
 print("Clipping distance: ", clipping_distance)
@@ -83,25 +83,25 @@ try:
         depth_image = np.asanyarray(aligned_depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
         #color_image = cv2.blur(src=color_image, ksize=(9, 9))
-        depth_image = cv2.blur(src=depth_image, ksize=(15, 15))
+        #depth_image = cv2.blur(src=depth_image, ksize=(15, 15))
 
         # Remove background - Set pixels further than clipping_distance to grey
         grey_color = 153
         depth_image_3d = np.dstack((depth_image, depth_image, depth_image)) #depth image is 1 channel, color is 3 channels
-        #bg_removed = np.where((depth_image_3d > clipping_distance) | (depth_image_3d <= 0), grey_color, color_image)
-        clipping_distance = 500
-        distancia_minima = 300
-        bg_removed = np.where((depth_image_3d > clipping_distance) | (depth_image_3d < distancia_minima), grey_color, color_image)
+        bg_removed = np.where((depth_image_3d > clipping_distance) | (depth_image_3d <= 0), grey_color, color_image)
+        #clipping_distance = 2000
+        #distancia_minima = 20
+        #bg_removed = np.where((depth_image_3d > clipping_distance) | (depth_image_3d < distancia_minima), grey_color, color_image)
 
 
         # Render images:
         #   depth align to color on left
         #   depth on right
         depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.01), cv2.COLORMAP_JET)
-        images = np.hstack((bg_removed, depth_colormap, color_image))
+        images = np.hstack((bg_removed, color_image))
 
 
-        cv2.namedWindow('Align Example', cv2.WINDOW_NORMAL)
+        cv2.namedWindow('Align Example')#, cv2.WINDOW_NORMAL)
         cv2.imshow('Align Example', images)
         key = cv2.waitKey(1)
         # Press esc or 'q' to close the image window
